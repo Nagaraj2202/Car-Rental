@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recharge / Payment</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+    body { 
+      background: url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1470&q=80") no-repeat center center fixed; 
+      background-size: cover; 
+      min-height: 100vh; 
+    }
+    .container { display: flex; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(6px); min-height: 100vh; }
+    .sidebar { width: 220px; background: #2c3e50; color: white; padding: 20px; display: flex; flex-direction: column; }
+    .sidebar h2 { text-align: center; margin-bottom: 20px; }
+    .user { text-align: center; margin-bottom: 20px; }
+    .user .avatar { font-size: 40px; margin-bottom: 10px; }
+    .sidebar nav a { display: block; padding: 10px; margin: 10px 0; text-decoration: none; background: #34495e; color: white; border-radius: 8px; transition: background 0.3s ease; }
+    .sidebar nav a:hover, .sidebar nav a.active { background: #2980b9; }
+    .main-content { flex: 1; padding: 30px; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 6px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .btn-container { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    .pay-btn, .print-btn { padding: 12px 20px; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+    .pay-btn { background: #2ecc71; }
+    .print-btn { background: #3498db; }
+    .summary label span { font-weight: 600; margin-left: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div>
+        <h2>Car Rentals</h2>
+        <div class="user">
+          <div class="avatar">👤</div>
+          <p>Nataraj service</p>
+        </div>
+        <nav>
+          <a href="dashboard.html">🏠 Dashboard</a>
+          <a href="rent.html">🚗 Rent A Car</a>
+          <a href="#" class="active">💳 Recharge</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <h1>Recharge / Payment</h1>
+
+      <div class="card summary">
+        <h2>Booking Summary</h2>
+        <div class="row">
+          <div>
+            <label>Name</label>
+            <input id="name" readonly />
+          </div>
+          <div>
+            <label>Phone</label>
+            <input id="phone" readonly />
+          </div>
+          <div>
+            <label>Pickup Location</label>
+            <input id="location" readonly />
+          </div>
+          <div>
+            <label>Car</label>
+            <input id="car" readonly />
+          </div>
+          <div>
+            <label>Car ID</label>
+            <input id="carId" readonly />
+          </div>
+          <div>
+            <label>Rent Date</label>
+            <input id="rentDate" readonly />
+          </div>
+          <div>
+            <label>Return Date</label>
+            <input id="returnDate" readonly />
+          </div>
+          <div>
+            <label>Cost (Total)</label>
+            <input id="cost" readonly />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Payment</h2>
+
+        <label>Payment Method</label>
+        <select id="payment-method">
+          <option value="UPI">UPI</option>
+          <option value="PhonePe">PhonePe</option>
+          <option value="GooglePay">Google Pay</option>
+          <option value="NetBanking">Net Banking</option>
+        </select>
+
+        <div id="payment-details-container" style="margin-top:10px; display:none;">
+          <label id="payment-label">Enter UPI ID</label>
+          <input id="payment-details" placeholder="example@ibl" />
+        </div>
+
+        <div class="btn-container">
+          <button class="pay-btn" id="pay-btn">Pay Now</button>
+          <button class="print-btn" id="print-btn">Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function parseAmount(val) {
+      if (typeof val === "number") return val;
+      if (!val) return 0;
+      return parseFloat(String(val).replace(/[^\d.]/g, "")) || 0;
+    }
+
+    // Load booking data
+    const rentData = JSON.parse(localStorage.getItem("rentData") || "{}");
+
+    if (!rentData || (!rentData.price && !rentData.priceFormatted)) {
+      alert("No booking found. Please make a booking first.");
+      window.location.href = "rent.html";
+    }
+
+    // Fill summary
+    document.getElementById("name").value = rentData.name || "";
+    document.getElementById("phone").value = rentData.phone || "";
+    document.getElementById("location").value = rentData.location || "";
+    document.getElementById("car").value = rentData.car || "";
+    document.getElementById("carId").value = rentData.carId || "";
+    document.getElementById("rentDate").value = rentData.rentDate || "";
+    document.getElementById("returnDate").value = rentData.returnDate || "";
+
+    const amount = parseAmount(rentData.price ?? rentData.priceFormatted);
+    document.getElementById("cost").value = `$${amount.toFixed(2)}`;
+
+    // Dynamic Payment Details Logic
+    const paymentMethodSelect = document.getElementById("payment-method");
+    const paymentDetailsContainer = document.getElementById("payment-details-container");
+    const paymentLabel = document.getElementById("payment-label");
+    const paymentDetailsInput = document.getElementById("payment-details");
+
+    function updatePaymentInput() {
+      const method = paymentMethodSelect.value;
+      paymentDetailsContainer.style.display = "block"; 
+      switch (method) {
+        case "UPI":
+          paymentLabel.textContent = "Enter UPI ID";
+          paymentDetailsInput.placeholder = "example@ibl";
+          break;
+        case "PhonePe":
+          paymentLabel.textContent = "Enter PhonePe Number";
+          paymentDetailsInput.placeholder = "Enter your registered PhonePe number";
+          break;
+        case "GooglePay":
+          paymentLabel.textContent = "Enter Google Pay Number";
+          paymentDetailsInput.placeholder = "Enter your registered GPay number";
+          break;
+        case "NetBanking":
+          paymentLabel.textContent = "Enter Bank Account / NetBanking ID";
+          paymentDetailsInput.placeholder = "Enter your bank account or netbanking ID";
+          break;
+      }
+    }
+
+    paymentMethodSelect.addEventListener("change", updatePaymentInput);
+    updatePaymentInput();
+
+    document.getElementById("pay-btn").addEventListener("click", () => {
+      const paymentMethod = paymentMethodSelect.value;
+      const paymentInfo = paymentDetailsInput.value.trim();
+      if (!paymentInfo) {
+        alert(`Please enter your ${paymentMethod} details!`);
+        return;
+      }
+
+      alert(`Payment successful via ${paymentMethod} ! Booking confirmed.`);
+    });
+
+    // Print Button
+    document.getElementById("print-btn").addEventListener("click", () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>

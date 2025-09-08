@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Car Rental Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f0f0; overflow-x: hidden; }
+    .dashboard-container { display: flex; height: 100vh; }
+    .sidebar { width: 260px; background: linear-gradient(135deg, #2c3e50, #34495e); color: white; display: flex; flex-direction: column; align-items: center; padding-top: 30px; box-shadow: 2px 0 10px rgba(0,0,0,0.2); animation: slideInLeft 0.5s ease; }
+    @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .admin-info { text-align: center; margin-bottom: 40px; }
+    .admin-icon { font-size: 60px; margin-bottom: 10px; }
+    .admin-info h3 { font-size: 18px; line-height: 1.4; }
+    .admin-info span { font-weight: bold; color: #f9d74c; }
+    .menu { width: 100%; padding: 0 20px; }
+    .menu-item { display: block; padding: 12px 15px; margin-bottom: 10px; background-color: #3b4a59; border-radius: 8px; text-decoration: none; color: white; cursor: pointer; transition: background 0.3s; }
+    .menu-item:hover, .menu-item.active { background-color: #2980b9; }
+    .user-btn, .signout-btn { margin-top: 10px; background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background 0.3s; }
+    .user-btn:hover { background-color: #1abc9c; }
+    .signout-btn { background-color: #c0392b; }
+    .signout-btn:hover { background-color: #e74c3c; }
+    .sidebar-bottom { margin-top: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .main-panel { flex-grow: 1; padding: 30px; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .card-container { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 30px; }
+    .card { flex: 1; background: linear-gradient(135deg, #4d4d4d, #6b6b6b); color: white; border-radius: 12px; padding: 20px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .card-icon { font-size: 40px; margin-right: 20px; }
+    .card-info h2 { font-size: 24px; margin-bottom: 5px; }
+    .card-info p { font-size: 14px; color: #ccc; }
+    .manage-cars { display: none; animation: fadeIn 0.5s ease; }
+    .manage-cars h2 { margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #aaa; border-radius: 6px; }
+    .add-btn { background-color: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 20px; transition: background 0.3s; }
+    .add-btn:hover { background-color: #3498db; }
+    .car-list { display: flex; flex-wrap: wrap; gap: 15px; }
+    .car-card { background: white; border-radius: 10px; padding: 15px; width: calc(33.33% - 10px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .car-card:hover { transform: scale(1.02); }
+    .car-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
+    .car-card h4 { margin-bottom: 8px; color: #2e3d49; }
+    .car-card p { font-size: 14px; color: #555; }
+    .delete-btn { margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+    @media (max-width: 768px) { .car-card { width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="admin-info">
+        <div class="admin-icon">👤</div>
+        <h3>Welcome<br><span>Admin</span></h3>
+      </div>
+      <nav class="menu">
+        <div class="menu-item active" onclick="showSection('dashboard')">📊 Dashboard</div>
+        <div class="menu-item" onclick="showSection('manage')">🛠️ Add/Update Cars</div>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="user-btn" onclick="goToUser()">👥 User Panel</button>
+        <button class="signout-btn" onclick="logout()">🔁 Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <section id="dashboard">
+        <div class="card-container">
+          <div class="card">
+            <div class="card-icon">🚗</div>
+            <div class="card-info">
+              <h2 id="carCount">0</h2>
+              <p>Available Cars</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">💵</div>
+            <div class="card-info">
+              <h2>$0.00</h2>
+              <p>Total Earning</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👥</div>
+            <div class="card-info">
+              <h2>0</h2>
+              <p>Total Customers</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="manage" class="manage-cars">
+        <h2>Add / Update Cars</h2>
+        <div class="form-group">
+          <label>Car Name</label>
+          <input type="text" id="carName" />
+        </div>
+        <div class="form-group">
+          <label>Car Model</label>
+          <input type="text" id="carModel" />
+        </div>
+        <div class="form-group">
+          <label>Price Per Day</label>
+          <input type="number" id="carPrice" />
+        </div>
+        <div class="form-group">
+          <label>Upload Car Image</label>
+          <input type="file" id="carImageFile" accept="image/*" />
+        </div>
+        <button class="add-btn" onclick="addCar()">Add Car</button>
+        <div class="car-list" id="carList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function showSection(section) {
+      document.getElementById('dashboard').style.display = section === 'dashboard' ? 'block' : 'none';
+      document.getElementById('manage').style.display = section === 'manage' ? 'block' : 'none';
+      document.querySelectorAll('.menu-item').forEach((el, i) => {
+        el.classList.remove('active');
+        if ((section === 'dashboard' && i === 0) || (section === 'manage' && i === 1)) {
+          el.classList.add('active');
+        }
+      });
+      if (section === 'dashboard') updateCarCount();
+    }
+
+    function addCar() {
+      const name = document.getElementById('carName').value.trim();
+      const model = document.getElementById('carModel').value.trim();
+      const price = document.getElementById('carPrice').value.trim();
+      const file = document.getElementById('carImageFile').files[0];
+      if (!name || !model || !price || !file) {
+        alert('Fill all fields and upload an image.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const image = e.target.result;
+        const car = { name, model, price, image };
+        let carList = JSON.parse(localStorage.getItem('carList')) || [];
+        carList.push(car);
+        localStorage.setItem('carList', JSON.stringify(carList));
+        localStorage.setItem('addedCars', JSON.stringify(carList)); // sync for user page
+        renderCars();
+        updateCarCount();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderCars() {
+      const container = document.getElementById('carList');
+      container.innerHTML = '';
+      const carList = JSON.parse(localStorage.getItem('carList')) || [];
+      carList.forEach((car, index) => {
+        const card = document.createElement('div');
+        card.className = 'car-card';
+        card.innerHTML = `
+          <img src="${car.image}" alt="${car.name}" />
+          <h4>${car.name} (${car.model})</h4>
+          <p>Price: ₹${car.price}</p>
+          <button class="delete-btn" onclick="deleteCar(${index})">🗑️ Delete</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function deleteCar(index) {
+      let carList = JSON.parse(localStorage.getItem('carList')) || [];
+      carList.splice(index, 1);
+      localStorage.setItem('carList', JSON.stringify(carList));
+      localStorage.setItem('addedCars', JSON.stringify(carList)); // sync for user page
+      renderCars();
+      updateCarCount();
+    }
+
+    function updateCarCount() {
+      const carList = JSON.parse(localStorage.getItem('carList')) || [];
+      document.getElementById('carCount').textContent = carList.length;
+    }
+
+    function goToUser() {
+      window.location.href = 'rent.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('isAdminLoggedIn');
+      window.location.href = 'login.html';
+    }
+
+    window.onload = () => {
+      renderCars();
+      updateCarCount();
+      showSection('dashboard');
+    };
+  </script>
+</body>
+</html>

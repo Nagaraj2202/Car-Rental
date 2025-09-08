@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car rental - Dashboard</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+      min-height: 100vh;
+      animation: fadeIn 1.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .user {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .user .avatar {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar nav a {
+      display: block;
+      padding: 10px;
+      margin: 10px 0;
+      text-decoration: none;
+      background: #34495e;
+      color: white;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: #27ae60;
+    }
+
+    .admin-login-btn {
+      text-align: center;
+      padding: 10px;
+      background: #8e44ad;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .signout {
+      text-align: center;
+      padding: 10px;
+      background: #c0392b;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #ffffff, #dfe9f3);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 200px;
+      transition: transform 0.3s ease;
+      animation: zoomIn 0.6s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    #about {
+      margin-top: 40px;
+    }
+
+    #about h2 {
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    #about p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    #about ul {
+      margin-left: 20px;
+      color: #333;
+    }
+
+    #about ul li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div>
+        <h2>Car Renter</h2>
+        <div class="user">
+          <div class="avatar">👤</div>
+          <p>YMK CAR RENTALS</p>
+        </div>
+        <nav>
+          <a href="dashboard.html" class="active">🏠 Dashboard</a>
+          <a href="rent.html">🚗 Rent A Car</a>
+          <a href="recharge.html">💳 Recharge</a>
+          <a href="about.html">📄 About</a>
+        </nav>
+        <div class="admin-login-btn" onclick="goToAdminLogin()">🔐 Admin Login</div>
+      </div>
+      <div class="signout" onclick="signOut()">⬅ Sign Out</div>
+    </div>
+
+    <div class="main-content">
+      <h1>Welcome to Your Dashboard</h1>
+      <div class="top-bar">
+        <div class="card">
+          <h3>Balance</h3>
+          <p id="balanceDisplay">₹0</p>
+        </div>
+        <div class="card">
+          <h3>Rented Cars</h3>
+          <p id="rentedCount">0</p>
+        </div>
+        <div class="card">
+          <h3>Available Cars</h3>
+          <p id="carCount">0</p>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <script>
+    function signOut() {
+      alert("Signed out successfully!");
+      window.location.href = "login.html";
+    }
+
+    function goToAdminLogin() {
+      window.location.href = "admin-login.html";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const balance = localStorage.getItem("walletBalance") || "0";
+      const rentedCars = localStorage.getItem("rentedCars") || "2";
+      const addedCars = JSON.parse(localStorage.getItem("addedCars") || "[]");
+
+      const defaultCars = 12;
+      const totalAvailableCars = addedCars.length + defaultCars;
+
+      document.getElementById("balanceDisplay").textContent = `₹${balance}`;
+      document.getElementById("rentedCount").textContent = rentedCars;
+      document.getElementById("carCount").textContent = totalAvailableCars;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login - Bhromon Bondhu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 50%;
+      width: 400px;
+      height: 400px;
+      padding: 40px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 25px;
+      font-size: 26px;
+    }
+
+    .input-box {
+      width: 80%;
+      margin-bottom: 20px;
+    }
+
+    .input-box label {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: 0.3s ease;
+    }
+
+    .input-box input:focus {
+      box-shadow: 0 0 10px #5dade2;
+    }
+
+    .login-btn {
+      width: 80%;
+      padding: 12px;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px #2a5298;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #1e3c72;
+    }
+
+    .back-link {
+      margin-top: 15px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #000;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <h2>🔐 Admin Login</h2>
+    <form onsubmit="adminLogin(event)">
+      <div class="input-box">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="admin" required />
+      </div>
+      <div class="input-box">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="admin123" required />
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+    <a href="dashboard.html" class="back-link">⬅ Back to Dashboard</a>
+  </div>
+
+  <script>
+    function adminLogin(event) {
+      event.preventDefault();
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (user === "admin" && pass === "admin123") {
+        alert("✅ Welcome, Admin!");
+        window.location.href = "admin-dashboards.html";
+      } else {
+        alert("❌ Invalid admin credentials");
+      }
+    }
+  </script>
+
+</body>
+</html>
